@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Blocked</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #0ea5e9); /* sky-400 to sky-600 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 flex flex-col items-center justify-center min-h-screen text-slate-100 p-6 text-center">
+    <div class="max-w-md w-full bg-slate-800 p-8 rounded-xl shadow-2xl">
+        <img src="images/block-graphic.png" alt="Blocked illustration" class="w-40 h-40 mx-auto mb-6 rounded-full border-4 border-sky-500 p-1">
+        
+        <h1 class="text-4xl font-bold gradient-text mb-3">Access Denied</h1>
+        <p class="text-lg text-slate-300 mb-2">You've chosen to block this site:</p>
+        <p id="blockedUrl" class="text-2xl font-semibold text-sky-400 mb-6 break-all"></p>
+
+        <div id="unblockInfo" class="text-slate-400 mb-8">
+            </div>
+
+        <p class="text-sm text-slate-500">Stay focused and make the most of your time!</p>
+        
+        <button id="goBackButton" class="mt-8 bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-150 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50">
+            Go Back
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const blockedUrlDisplay = document.getElementById('blockedUrl');
+            const unblockInfoDisplay = document.getElementById('unblockInfo');
+            const goBackButton = document.getElementById('goBackButton');
+
+            const blockedUrl = urlParams.get('url');
+            const unblockTimestamp = urlParams.get('unblockTime');
+            const blockType = urlParams.get('blockType');
+
+            if (blockedUrl) {
+                blockedUrlDisplay.textContent = decodeURIComponent(blockedUrl);
+            } else {
+                blockedUrlDisplay.textContent = "This site";
+            }
+
+            if (blockType === 'permanent' || !unblockTimestamp || unblockTimestamp === 'null') {
+                unblockInfoDisplay.textContent = "This site is blocked permanently according to your settings.";
+            } else {
+                const unblockDate = new Date(parseInt(unblockTimestamp));
+                if (unblockDate > new Date()) {
+                    unblockInfoDisplay.innerHTML = `It will be accessible again after: <br><strong class="text-sky-300">${unblockDate.toLocaleString()}</strong>.`;
+                    
+                    // Optional: Countdown timer
+                    const countdownInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = unblockDate.getTime() - now;
+                        if (distance < 0) {
+                            clearInterval(countdownInterval);
+                            unblockInfoDisplay.innerHTML = `This site should be accessible now. <br><strong class="text-green-400">Try refreshing.</strong>`;
+                            return;
+                        }
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        
+                        let countdownText = "Time remaining: ";
+                        if (days > 0) countdownText += `${days}d `;
+                        if (hours > 0 || days > 0) countdownText += `${hours}h `;
+                        if (minutes > 0 || hours > 0 || days > 0) countdownText += `${minutes}m `;
+                        countdownText += `${seconds}s`;
+                        
+                        unblockInfoDisplay.innerHTML = `It will be accessible again after: <br><strong class="text-sky-300">${unblockDate.toLocaleString()}</strong><br><span class="text-sm">${countdownText}</span>`;
+
+                    }, 1000);
+
+                } else {
+                     unblockInfoDisplay.innerHTML = `This site should be accessible now. <br><strong class="text-green-400">Try refreshing.</strong>`;
+                }
+            }
+            
+            goBackButton.addEventListener('click', () => {
+                window.history.back();
+            });
+        });
+    </script>
+</body>
+</html>
