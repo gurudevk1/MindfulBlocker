@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindful Blocker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            width: 400px;
+            font-family: 'Inter', sans-serif; /* Assuming Inter is loaded or falls back */
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d3748; /* bg-slate-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a5568; /* bg-slate-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096; /* bg-slate-500 */
+        }
+        .input-field {
+            @apply w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-100 placeholder-slate-400 focus:ring-sky-500 focus:border-sky-500;
+        }
+        .btn {
+            @apply px-4 py-2 rounded-md font-semibold transition-colors duration-150;
+        }
+        .btn-primary {
+            @apply bg-sky-600 text-white hover:bg-sky-700 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50;
+        }
+        .btn-secondary {
+            @apply bg-slate-600 text-slate-200 hover:bg-slate-700 focus:ring-2 focus:ring-slate-500 focus:ring-opacity-50;
+        }
+        .btn-danger {
+            @apply bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50;
+        }
+        .tab-button {
+            @apply px-4 py-2 font-medium text-sm leading-5 rounded-t-lg;
+        }
+        .tab-button.active {
+            @apply text-sky-500 border-b-2 border-sky-500;
+        }
+        .tab-button:not(.active) {
+            @apply text-slate-400 hover:text-slate-200 hover:border-b-2 hover:border-slate-400;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-sky-400">Mindful Blocker</h1>
+        <img src="icons/icon48.png" alt="Mindful Blocker Icon" class="w-10 h-10 rounded-lg">
+    </div>
+
+    <form id="blockSiteForm" class="space-y-4 mb-6 p-4 bg-slate-800 rounded-lg shadow-xl">
+        <div>
+            <label for="siteUrl" class="block text-sm font-medium text-slate-300 mb-1">Website URL</label>
+            <input type="text" id="siteUrl" name="siteUrl" class="input-field" placeholder="e.g., example.com" required>
+            <p class="text-xs text-slate-500 mt-1">Enter the domain (e.g., news.com) or a specific URL.</p>
+        </div>
+
+        <div>
+            <label for="blockType" class="block text-sm font-medium text-slate-300 mb-1">Block Type</label>
+            <select id="blockType" name="blockType" class="input-field">
+                <option value="permanent">Permanently</option>
+                <option value="duration">For a duration</option>
+                <option value="untilTime">Until a specific time</option>
+            </select>
+        </div>
+
+        <div id="durationOptions" class="hidden space-y-2">
+            <label for="durationMinutes" class="block text-sm font-medium text-slate-300">Duration</label>
+            <select id="durationMinutes" name="durationMinutes" class="input-field">
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="120">2 hours</option>
+                <option value="custom">Custom (minutes)</option>
+            </select>
+            <input type="number" id="customDurationMinutes" name="customDurationMinutes" class="input-field hidden" placeholder="Enter minutes (e.g., 45)">
+        </div>
+
+        <div id="untilTimeOptions" class="hidden">
+            <label for="unblockTime" class="block text-sm font-medium text-slate-300">Unblock Time (Today)</label>
+            <input type="time" id="unblockTime" name="unblockTime" class="input-field">
+        </div>
+        
+        <input type="hidden" id="editingSiteId" value="">
+
+        <div class="flex space-x-3">
+            <button type="submit" id="addOrUpdateSiteBtn" class="btn btn-primary w-full">Add Site</button>
+            <button type="button" id="cancelEditBtn" class="btn btn-secondary w-full hidden">Cancel Edit</button>
+        </div>
+    </form>
+
+    <div>
+        <h2 class="text-xl font-semibold mb-3 text-slate-200">Currently Blocked Sites</h2>
+        <div id="blockedSitesList" class="space-y-3 max-h-60 overflow-y-auto bg-slate-800 p-4 rounded-lg shadow-inner">
+            <p id="noSitesMessage" class="text-slate-400 text-center py-4">No sites are currently blocked.</p>
+        </div>
+    </div>
+
+    <div id="toast-message" class="fixed bottom-5 right-5 bg-sky-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm hidden transition-opacity duration-300">
+        Message
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
